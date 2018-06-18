@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src='script.js'></script>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>Trading Calculator</h1>
+
+        <!--  Investment Input  -->
+        <div id='investment-wrapper'>
+            <h2>Investment Total:</h2>
+            <input id='investment-input' type="text">
+        </div>
+
+        <!--  Search Bar  -->
+<!--        <div class="search-bar">-->
+            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+
+<ul id="myUL">
+  <li><a href="#">Adele</a></li>
+  <li><a href="#">Agnes</a></li>
+
+  <li><a href="#">Billy</a></li>
+  <li><a href="#">Bob</a></li>
+
+  <li><a href="#">Calvin</a></li>
+  <li><a href="#">Christina</a></li>
+  <li><a href="#">Cindy</a></li>
+</ul>
+<!--        </div>-->
+
+        <div class="stock" id="stock">
+            <h2>Symbol</h2>
+            <input type="text">
+            <h2>Percentage</h2>
+            <input type="text" id='percentage' >
+        </div>
+        <button>add stock</button>
+
+        <div id='calculator'>
+            <button id='calculate-button'>CALCULATE!</button>
+        </div>
+    </div>
+    
+
+</body>
+
+</html>
