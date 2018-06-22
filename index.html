@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
-    <script src='script.js'></script>
+
     <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+  <script src='script.js'></script>
 </head>
 
 <body>
     <div class="wrapper">
         <h1>Trading Calculator</h1>
-
         <!--  Investment Input  -->
         <div id='investment-wrapper'>
             <h2>Investment Total:</h2>
@@ -24,34 +24,37 @@
 
         <!--  Search Bar  -->
 <!--        <div class="search-bar">-->
-            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+<h2>Stock Lookup</h2>
+<p>Type something in the input field to search the list for specific stocks:</p>
+<input id="search-input" type="text" placeholder="Search..">
+<br>
 
-<ul id="myUL">
-  <li><a href="#">Adele</a></li>
-  <li><a href="#">Agnes</a></li>
+<div id="search-list">
+<ul id="stock-name"></ul>
+<ul id="stock-symbol"></ul>
 
-  <li><a href="#">Billy</a></li>
-  <li><a href="#">Bob</a></li>
-
-  <li><a href="#">Calvin</a></li>
-  <li><a href="#">Christina</a></li>
-  <li><a href="#">Cindy</a></li>
-</ul>
+</div>
+<button id="add-stock">add stock</button>
 <!--        </div>-->
 
-        <div class="stock" id="stock">
-            <h2>Symbol</h2>
-            <input type="text">
-            <h2>Percentage</h2>
-            <input type="text" id='percentage' >
+        <div class="stocks" id="stocks">
+          <table class="stock-list" id="stock-list">
+            <tr>
+              <th>Symbol</th>
+              <th>Name</th>
+              <th>Cost</th>
+              <th>Percentage</th>
+              <th>Investment Total</th>
+            </tr>
+          </table>
         </div>
-        <button>add stock</button>
+
 
         <div id='calculator'>
             <button id='calculate-button'>CALCULATE!</button>
         </div>
     </div>
-    
+
 
 </body>
 

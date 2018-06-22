@@ -9,9 +9,30 @@ h2 {
 
 /*ID's*/
 .investment-box {
-    
+
 }
 
 .stock {
     display: inline;
+}
+
+#search-list {
+  overflow: auto;
+  width: 500px;
+  height: 100px;
+  background-color: #a0c4ff;
+}
+
+#stock-symbol {
+  display: inline;
+  align-items: flex-end;
+}
+
+#stock-name {
+  display: inline;
+  align-items: flex-start;
+}
+
+#add-stock {
+  display: inline;
 }
