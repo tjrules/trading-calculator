@@ -16,16 +16,15 @@ h2 {
     display: inline;
 }
 
+th {
+  padding-right: 20px;
+}
+
 #search-list {
   overflow: auto;
   width: 500px;
   height: 100px;
   background-color: #a0c4ff;
-}
-
-#stock-symbol {
-  display: inline;
-  align-items: flex-end;
 }
 
 #stock-name {

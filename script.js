@@ -13,37 +13,70 @@ $(document).ready(() => {
     });
 
 
-const $stockObj = [
-  {
-    name: "Google",
-    symbol: "GOOG",
-    price: "100"
-  },
-  {
-    name: "Apple",
-    symbol: "AAPL",
-    price: "200"
-  },
-  {
-    name: "Finance and Markets",
-    symbol: "FAM",
-    price: "300"
-  }
-];
+// const $stockObj = [
+//   {
+//     name: "Google",
+//     symbol: "GOOG",
+//     price: "100"
+//   },
+//   {
+//     name: "Apple",
+//     symbol: "AAPL",
+//     price: "200"
+//   },
+//   {
+//     name: "Finance and Markets",
+//     symbol: "FAM",
+//     price: "300"
+//   }
+// ];
 
-$.each($stockObj, function(d,i){
-  const populateSearchList = $('<li>').append(i.name + " - " + i.symbol)
-  $('#stock-name').append(populateSearchList);
-})
+// $.each($stockObj, function(d,i){
+//   const populateSearchList = $('<li>').append(i.name + ' -' + i.symbol);
+//   $('#stock-name').append(populateSearchList);
+// })
 
-$('div li').click(function(){
-  let that = this;
-  console.log(that);
-  $('div li').css('background-color', '#a0c4ff');
-  $(this).css('background-color', 'pink');
-})
 
-// const populateTable;
+// New click event for handling data
+
+// $('#stock-name li').on('click', function(){
+//   console.log($(this).data())
+// })
+//
+//
+// $('div li').click(function(){
+//   let that = $(this).text();
+//   let regexp = /that-(.*)/;
+//   let symbol = that.split('-');
+//
+//   $('div li').css('background-color', '#a0c4ff');
+//   $(this).css('background-color', 'pink');
+//   $('#add-stock').click(function(){
+//     let $tr = $('<tr>').append(
+//       $('<td>').text(symbol[0]),
+//       $('<td>').text(symbol[1]),
+//       $('<td>').text(symbol.price),
+//       $('<td> <input>').text(0),
+//       $('<td>').text(0),
+//       $('<td>').text(0),
+//       $('<td>').text(0)
+//
+//     );
+//       $('#stock-table').append($tr);
+//   });
+// });
+
+//  <th>Symbol</th>
+
+
+
+// wordpress cron job
+// .on
+
+// const populateTable = function(){
+//   let $tr = ('<tr>')
+// }
+
 
   // const handleStockData = data =>{
   //   data.foreach( el => {
@@ -64,32 +97,55 @@ $('div li').click(function(){
 //   dataType: "JSONP"
 // })
 //
-//    $.ajax ({
-//        url: 'https://api.iextrading.com/1.0/ref-data/symbols?filter=symbol,name',
-//        method: 'GET',
-//        dataType: "JSONP"
-//
-//    })
-//    .then(data => {
-//      $.each(data, function(d,i){
-//
-//       let $stock = $('<li>').append(i.name + " - " + i.symbol);
-//
-//        // let $li = $('<li>').append(
-//        //   $('<li>').text(i.name)
-//        // )
-//        $('#stock-name').append($stock);
-//        // $('#stock-symbol').append($symbol)
-//      })
-//
-//      $("div li").click(function(){
-//        $(this).css("background-color", "pink");
-//      });
-//
-//
-//    })
+   $.ajax({
+       url: 'https://api.iextrading.com/1.0/ref-data/symbols?filter=symbol,name',
+       method: 'GET',
+       dataType: "JSONP"
+   }).done(function(data){
+     $.each(data, function(d,i){
+     let $stock = $('<li>').append(i.name + " — " + i.symbol);
+     $('#stock-name').append($stock);
+
+   })
+   .then(data => {
+
+       // $('#stock-symbol').append($symbol)
+     })
+
+
+
+
+
+   })
+
+
+   $('#add-stock').off('click').on('click', function(){
+      console.log('this is symbol', $symbol);
+   })
+   .then(data=>{
+    $.ajax({
+       url: `https://api.iextrading.com/1.0/stock/${$symbol}/price`,
+       method: 'GET',
+       dataType: 'JSONP'
+       })
+       console.log('this is data', data)
+   })
    // console.log('this is data', data.name);
    // Hide li when clicked
+   $("div li").off('click').on('click', function(){
+     // console.log(this);
+     $('div li').css('background-color', '#a0c4ff');
+     $(this).css("background-color", "pink");
+    let  $that = $(this).text();
+    let  $stock = $that.split('— ');
+    let  $symbol = $stock[1].toLowerCase();
+     // const addStock = function(){
+     //   console.log('clicked')
+     // }
+   });
 
+// const getData( =>{
+//
+// })
 
 });
