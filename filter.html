@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script></head>
+
+<body>
+  <!-- <div id="search">
+    <input type="text" id="search-input">
+    <ul id="stock-name"></ul>
+    <ul id="stock-name-results"></ul>
+  </div> -->
+
+  <!-- Wrapper container -->
+  <div class='container'>
+    <!-- Title -->
+    <h3 class='text-center'>Trading Calculator</h3>
+
+    <!--  Investment Input  -->
+    <div class='jumbotron text-center' id='investment-wrapper'>
+      <h5>Total Capital Available for Investment (USD):</h5>
+      <input id='investment-input' type='text'>
+      <h6 id='input-val-msg'>You must enter a number!</h6>
+    </div>
+    <div>
+      <h3>Stock Lookup</h2>
+        <p>Start typing in the input field to find the stock(s) you are interested in investing in.</p>
+        <input id='search-input' type='text' placeholder='Search...'>
+        <br>
+        <div id=' search-list' style='overflow: scroll; height:100px; background-color:#a0c4ff' width="100%">
+          <ul id='stock-name' style='list-style-type:none;'></ul>
+          <ul id='stock-name-results' style='list-style-type:none; '></ul>
+        </div>
+    </div>
+    <button id='add-stock'>add stock</button>
+    <div class='stocks' id='stocks'>
+      <table class='table table-bordered stock-table text-centered' id='stock-table'>
+        <tr>
+          <th id='#table-name'>Name</th>
+          <th id='#table-symbol'>Symbol</th>
+          <th id='#table-price'>Cost</th>
+          <th id='#table-percentage'>Percentage
+            <h6 id='percent-message'>Cannot exceed 100%.</h6>
+          </th>
+          <th id='#table-investment'>Dollar Total</th>
+          <th id='#table-shares'>Shares Needed</th>
+        </tr>
+      </table>
+      <h6 id='percent-message'>Cannot exceed 100%.</h1>
+        <h6 id='too-much'>You can only add ten stocks at a time.</h1>
+    </div>
+    <div id='calculator'>
+      <button id='calculate-button'>CALCULATE!</button>
+    </div>
+  </div>
+  <script>
+    $(document).ready(() => {
+      const tradingCalc = () => {
+        let stocks = [];
+        let selectStock;
+        console.log('jquery working');
+        const getData = () => {
+          $.ajax({
+            url: 'https://api.iextrading.com/1.0/ref-data/symbols?filter=symbol,name',
+            method: 'GET',
+            dataType: "JSONP",
+          }).then((data) => {
+            console.log('this is data', data);
+            stocks = data;
+            convertData();
+            clickStock();
+          }) //end ajax
+        } //End getData
+
+        const convertData = () => {
+          $(stocks).each((i, d) => {
+            let sym = d.symbol;
+            let name = d.name;
+            if (name && sym) {
+              $('#stock-name').append(`<li class='data-item' data-tag='${sym.toLowerCase()}' data-search-term='${name.toLowerCase()}'>${sym} — ${name}</li>`);
+            }
+          })
+          searchData();
+        } /// End ConvertData
+
+        const searchData = () => {
+          $('#search').attr('list-style-type', 'none');
+          //    the delay function set as a variable
+          const delay = (function() {
+            let timer = 0;
+            return function(callback, ms) {
+              clearTimeout(timer);
+              timer = setTimeout(callback, ms);
+            };
+          })();
+
+          $('#search-input').on('keyup', function() {
+            let searchTerm = $(this).val().toLowerCase();
+            let dataString = '[data-tag ^= ' + '"' + searchTerm + '"' + '] , ' + '[data-search-term ^= ' + '"' + searchTerm + '"' + ']';
+
+            // causes delay when typing so that loading doesn't happen with the typing of each letter
+            delay(function() {
+              if (searchTerm.length === 0) {
+                $("#stock-name-results").html("");
+                $("#stock-name").show();
+              } else {
+                //Hide the full lists of stocks
+                $("#stock-name").hide();
+
+                //Clear the search results
+                $("#stock-name-results").html("");
+
+                //Search the full list of stocks and append the results to the search results ul
+                $("#stock-name li").filter(dataString).clone().appendTo($("#stock-name-results"));
+                ///////////// Click selector for stocks selected /////////////////
+                clickResult();
+              }
+            }, 500);
+
+          });
+        }
+        const clickStock = () => {
+
+          $("#stock-name li ").off('click').on('click', function() {
+            console.log('click');
+            $('.data-item').css('background-color', '#a0c4ff');
+            $(this).css("background-color", "pink");
+            let $that = $(this).text();
+            let $stock = $that.split('— ');
+            console.log('this is stock', $stock);
+            $symbol = $stock[0].toLowerCase();
+            localStorage.content = $symbol;
+            console.log($symbol);
+          });
+
+          //
+
+        } //End ClickStock
+
+        const clickResult = () => {
+          $("#stock-name-results li").off('click').on('click', function() {
+            console.log('click');
+            $('.data-item').css('background-color', '#a0c4ff');
+            $(this).css("background-color", "pink");
+            let $that = $(this).text();
+            let $stock = $that.split('— ');
+            console.log('this is stock', $stock);
+
+            selectStock = $stock[0].toLowerCase();
+
+            // localStorage.content = $symbol;
+            // console.log($symbol);
+          })
+        }
+        const getSelectedStock = () => {
+
+        }
+        getData();
+        clickStock();
+      } /// END trading calc
+      tradingCalc();
+    }); // END Jquery
+  </script>
+</body>
+
+</html>

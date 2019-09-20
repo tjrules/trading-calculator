@@ -1,0 +1,78 @@
+/*Elements*/
+h1 {
+    color: blue;
+}
+
+h2 {
+    display: inline;
+}
+
+/*ID's*/
+.investment-box {
+
+}
+
+.stock {
+    display: inline;
+}
+
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    cursor: pointer;
+
+}
+
+.btn:hover {
+    background-color: RoyalBlue;
+}
+
+th {
+  padding-right: 20px;
+}
+
+#search-list {
+  overflow: auto;
+  width: 100%;
+  height: 100px;
+  border-radius: 5px;
+  background-color: #a0c4ff;
+}
+
+#stock-name {
+  display: inline;
+  align-items: flex-start;
+}
+
+#add-stock {
+  display: inline;
+}
+
+#percent-message {
+  color: red;
+  display: none;
+}
+
+#input-val-msg {
+  color: red;
+  display: none;
+}
+
+#too-much {
+  color: red;
+  display: none;
+}
+
+#no-duplicates {
+  color: red;
+  display: none;
+}
+#stock-table {
+  display:none;
+}
+#calculate-button{
+  display:none;
+}

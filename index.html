@@ -1,58 +1,355 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <script src='script.js'></script>
-    <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.3/jquery.csv.min.js"></script>
 </head>
 
 <body>
-    <div class="wrapper">
-        <h1>Trading Calculator</h1>
-
-        <!--  Investment Input  -->
-        <div id='investment-wrapper'>
-            <h2>Investment Total:</h2>
-            <input id='investment-input' type="text">
-        </div>
-
-        <!--  Search Bar  -->
-<!--        <div class="search-bar">-->
-            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
-
-<ul id="myUL">
-  <li><a href="#">Adele</a></li>
-  <li><a href="#">Agnes</a></li>
-
-  <li><a href="#">Billy</a></li>
-  <li><a href="#">Bob</a></li>
-
-  <li><a href="#">Calvin</a></li>
-  <li><a href="#">Christina</a></li>
-  <li><a href="#">Cindy</a></li>
-</ul>
-<!--        </div>-->
-
-        <div class="stock" id="stock">
-            <h2>Symbol</h2>
-            <input type="text">
-            <h2>Percentage</h2>
-            <input type="text" id='percentage' >
-        </div>
-        <button>add stock</button>
-
-        <div id='calculator'>
-            <button id='calculate-button'>CALCULATE!</button>
-        </div>
+  <div class='wrapper container'>
+    <h1 class='text-center'>Finance and Markets Trading Calculator</h1>
+    <!--  Investment Input  -->
+    <div class='jumbotron text-center' id='investment-wrapper'>
+      <h2>Investment Amount:</h2>
+      <input id='investment-input' type='text'>
+      <h1 id='input-val-msg'>You must enter a number!</h1>
     </div>
-    
 
+    <h2>Stock Lookup</h2>
+    <p>Start typing in the input field to find your stock:</p>
+    <input id='search-input' type='text' placeholder='Search...'>
+    <br>
+
+    <div id='search-list'>
+      <ul id='stock-name' style='list-style-type:none; display:inline;'></ul>
+      <ul id='stock-name-results' style='list-style-type:none; display:inline;'></ul>
+    </div>
+
+    <button id='add-stock'>add stock</button>
+
+    <div class='stocks' id='stocks'>
+      <table class='table table-bordered stock-table' id='stock-table'>
+        <tr>
+          <th id='#table-name'>Name</th>
+          <th id='#table-symbol'>Symbol</th>
+          <th id='#table-price'>Cost</th>
+          <th id='#table-percentage'>Percentage</th>
+          <th id='#table-investment'>Dollar Total</th>
+          <th id='#table-shares'>Shares Needed</th>
+        </tr>
+      </table>
+      <h1 id='percent-message'>Percentages must add up to 100%.</h1>
+      <h1 id='too-much'>You can only add ten stocks at a time.</h1>
+      <h1 id='no-duplicates'>Duplicates are not allowed.</h1>
+    </div>
+    <div id='calculator'>
+      <button id='calculate-button'>CALCULATE!</button>
+    </div>
+    <h6>“Data provided for free by <a href='https://iextrading.com/developer' target=_blank>IEX</a>. View IEX’s <a href='' target=_blank>Terms of Use.”</a></h6>
+  </div>
+  <script type="text/javascript">
+    ///Start Jquery
+    $(document).ready(function() {
+      //creating function that starts application so there are no global variables
+      const tradingCalc = () => {
+
+        console.log('Hello! welcome to the trading calculator created by TJ Stubbs! If you are interested in seeing some of my work feel free to check out my github /tjrules');
+        const APIbase = 'https://cloud.iexapis.com/stable/';
+        const publicKey = 'pk_ceb77964e8684649a2cba10baf5a916c';
+        // Stock Counter keeps track of how many stocks have been added to the stock list. It's called globally
+        let $stockCounter = 0;
+
+
+
+        // This is the search function basically it's a filter function that grabs the search input using the keyup listener to track what is typed into the input box value takes the letters typed into the search input and converts them to lower case another function grabbing the search list and each list item within the search list and grabs the text converts it to lower case and then compares the list item to what is being typed into the search input using index of.
+        const searchBar = () => {
+          const delay = (function() {
+            let timer = 0;
+            return function(callback, ms) {
+              clearTimeout(timer);
+              timer = setTimeout(callback, ms);
+            };
+          })();
+
+          $('#search-input').on('keyup', function() {
+            let searchTerm = $(this).val().toLowerCase();
+            let dataString = '[data-search-term ^= ' + '"' + searchTerm + '"' + '], ' + '[data-tag ^= ' + '"' + searchTerm + '"' + ']';
+            $("#myTable tr").filter(function() {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+            // delay(function() {
+            //   if (searchTerm.length === 0) {
+            //     $("#stock-name-results").html("");
+            //     $("#stock-name").show();
+            //   } else {
+            //     //Hide the full lists of stocks
+            //     $("#stock-name").hide();
+            //
+            //     //Clear the search results
+            //     $("#stock-name-results").html("");
+            //
+            //     //Search the full list of stocks and append the results to the search results ul
+            //     $("#stock-name li").filter(dataString).clone().appendTo($("#stock-name-results"));
+            //     $("#search-list li").off('click').on('click', function() {
+            //       $('.data-item').css('background-color', '#a0c4ff');
+            //       $(this).css("background-color", "pink");
+            //       let $that = $(this).text();
+            //       let $stock = $that.split('— ');
+            //       $symbol = $stock[1].toLowerCase();
+            //       localStorage.content = $symbol;
+            //       console.log($symbol);
+            //     });
+            //   }
+            // }, 500);
+
+          });
+        } // End Searchbar function
+
+        const convertData = (stocks) => {
+          // console.log('inside convertData', stocks);
+          $.each(stocks, (i, d) => {
+
+            //   console.log('this is d',d.name);
+            //   // console.log('this is i', i);
+            let stock = $(`<li data-search-term='${d.name.toLowerCase()}'>`).append(d.name + " — " + d.symbol);
+            $(stock).addClass('data-item');
+            $('#stock-name').append(stock);
+          });
+          searchBar();
+        }
+
+        // This ajax call is making a GET request for JSONP to a stock quote api from IEX. After the api call is made a .each loops through the entire dataset of all the stocks in the database and appending list items of all the stocks and their symbols together as individual list items in the stock-name list box
+        const getData = () => {
+          $.ajax({
+            // action: 'admin-ajax'
+            url: 'https://api.iextrading.com/1.0/ref-data/symbols?filter=symbol,name',
+            method: 'GET',
+            dataType: "JSONP",
+            // cache: true
+          }).then((data) => {
+            let stocks = data;
+            // console.log('this is data from ajax', data);
+            convertData(stocks);
+
+          });
+        }
+        // This is the click event for clicking on the stocks that the user wants to hightlight, when a name is clicked on it will turn off any previous hilight and hightlight the
+        // currently clicked on stock, it also splits the text from the clicked on stock into an array and stores the symbol as a local storage variable so that it can be used to make an
+        // an additional ajax call for that particular stock so that the current price can be acquired and added into your stock list.
+        const stockClick = () => {
+          $("#search-list div li").off('click').on('click', function() {
+            $('div li').css('background-color', '#a0c4ff');
+            $(this).css("background-color", "pink");
+            let that = $(this).text();
+            let stock = that.split('— ');
+            symbol = stock[1].toLowerCase();
+            localStorage.content = symbol;
+            console.log('this is symbol', symbol);
+            // Attempt at a keyboard event that adds the stock selected to the list when enter is hit, but It's not seeming to work
+            // $('div li').keyup(function(e){
+            //   if(e.which == 13) {
+            //     console.log('entered');
+            //     $('#add-stock').click();
+            //   }
+            // const addStock = function(){
+            //   console.log('clicked')
+            // }
+          });
+          addStock();
+        }
+        // })
+
+
+        // .then(data => {
+        //   url: 'https://api.iextrading.com/1.0/stock/' + $symbol + '/price',
+        //    method: "GET",
+        //    dataType: "JSONP"
+        // });
+        // });
+        // console.log($(this));
+        // checkStockCounter = (event) =>{
+        //
+        // }
+
+        const addStock = () => {
+          $('#add-stock').off('click').on('click', function(event) {
+            // let $contents = {}, $text;
+            //   $('#stock-table .rows').each(function() {
+            //     $text = $(this).text();
+            //     console.log('this is row', $text);
+            //       if (!($text in $contents)){
+            //         $contents[$text] = true;
+            //       } else {
+            //         $(this.parentNode).remove();
+            //       }
+            //     });
+            // Check Duplicates callback function
+            // checkStockCounter();
+            // checkDup();
+            if ($stockCounter >= 10) {
+              $('#too-much').show();
+              event.preventDefault();
+            } else {
+              $('#too-much').hide();
+              $stockCounter = $stockCounter + 1;
+              // console.log('this is stock Counter', $stockCounter)
+              $.ajax({
+                  url: `https://api.iextrading.com/1.0/stock/${localStorage.content}/quote`,
+                  method: 'GET',
+                  dataType: "JSONP"
+                })
+                .then(function(data) {
+                  let $tr = $('<tr class="rows">').append(
+                    $('<td class="table-name">').text(data.companyName),
+                    $('<td class="table-symbol">').text(data.symbol),
+                    $('<td class="table-price">').text(data.latestPrice),
+                    $('<input class="table-percent">').text(0), $('<td class="table-invest">').text(0),
+                    $('<td class="table-shares">').text(0),
+                    $('<button id="trash" class="btn btn-danger"><i class="fa fa-trash"></i></button>')
+                  )
+                  $('#stock-table').append($tr);
+                  $('#stock-table').show();
+                  $('#calculate-button').show();
+                })
+
+              // let $txt = $(this).children('td:eq(1)').text();
+              // if ($seen[localStorage[0]]){
+              //    console.log('this is txt', $txt);
+              //   $('#no-duplicates').show();
+              //    $(this).off('click');
+              //   return false;
+              //
+              //
+              // } else {
+              //
+              //   $('#no-duplicates').hide();
+              //   $seen[localStorage[0]] = true;
+              // }
+              //  console.log(localStorage[0]);
+              // console.log($symbol);
+            }
+          });
+        }
+
+        // const checkDup = () => {
+        //
+        // }
+        // }
+
+        $('#calculate-button').on('click', function(event) {
+          let percentTotal = 0;
+
+          // const investTotal = $('#investment-input').val();
+          // let sharesArr = [];
+          // let investArr = [];
+          // let percentArr = [];
+          // let costArr = $('.');
+
+          //   const getPrices = () => {
+          //     $('.table-price').each(function(d,i){
+          //     let prices = [];
+          //     let price = $(this).text();
+          //     prices.push(price)
+          //      prices.parseInt();
+          // console.log('table-price data', prices);
+          //   })
+          // }
+          // console.log(investTotal);
+          // if (typeof(investTotal) !== NaN) {
+          //   $('#input-val-msg').hide();
+          //   console.log('your investment total is', investTotal);
+          // } else {
+          //   $('#input-val-msg').show();
+          // }
+
+          $('.table-percent').each(function() {
+            // percentTotal = 0;
+            percentTotal = percentTotal + parseInt($(this).val());
+            // if (percentTotal === 100) {
+            //   $('#percent-message').hide();
+            // } else {
+            //   $('#percent-message').show();
+            //   console.log('does not equal 100');
+            // }
+          })
+          console.log('this is percenttotal', percentTotal);
+          if (percentTotal !== 100) {
+            $('#percent-message').show();
+            event.preventDefault();
+          } else {
+            // console.log(calcPercent);
+            $('#percent-message').hide();
+            // Loops through each table row and calculates the data
+            $('.rows').each(function(d, i) {
+              // console.log('this is data',i);
+              let $price = 0;
+              let $percent = 0;
+              let $investment = 0;
+              let $percentToDecimal = 0;
+              let $investmentTotal = 0;
+              let $shareTotal = 0;
+              let $investCell = $(this).find('.table-invest');
+              let $shareCell = $(this).find('.table-shares');
+              $price = $(this).find('.table-price').text();
+              // $parsePrice = parseFloat($price) * 1;
+              $percent = $(this).find('input.table-percent').val();
+              $investment = $('#investment-input').val();
+              $percentToDecimal = parseFloat($percent) / 100.0;
+              $investmentTotal = $investment * $percentToDecimal;
+              $shareTotal = $investmentTotal / $price;
+              $investCell.empty().append('$' + $investmentTotal);
+              $shareCell.empty().append($shareTotal.toFixed(2));
+              // let $sharesNeeded =
+              // let $splitRowData = i.split(">");
+              console.log('this is price', $price);
+              // console.log('this is ParsePrice', $parsePrice);
+              console.log('this is percent', $percent);
+              console.log('this is investment', $investment);
+              console.log('this is percent', $percentToDecimal);
+              console.log('this is investmentTotal', $investmentTotal);
+              console.log('this is shareTotal', $shareTotal);
+            });
+          }
+        })
+
+        // Delete Table Row
+        $('#stock-table').on('click', '.btn', function() {
+          // event.preventDefault();
+          $stockCounter = $stockCounter - 1;
+          $('#too-much').hide();
+          console.log('stock count subtracted', $stockCounter);
+          $(this).closest('tr').remove();
+          return false;
+        })
+        getData();
+      } //End TradingCalc
+      tradingCalc();
+    }); //End Jquery
+    //
+    //
+    //  AJAX handlers
+    //
+
+    //   $.each(data, function(d,i){
+    //   let $stock = $('<li>').append(i.name + " — " + i.symbol);
+    //   $('#stock-name').append($stock);
+    // });
+    //
+    // $('#add-stock').off('click').on('click', function(){
+    //    console.log('this is symbol', $symbol);
+    // })
+    //
+    // const addToStockTable = data => {
+    //
+    // }
+  </script>
 </body>
 
 </html>

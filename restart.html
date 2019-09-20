@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.3/jquery.csv.min.js"></script>
+
+</head>
+
+<body>
+  <div class='wrapper container'>
+    <h1 class='text-center'>Finance and Markets Trading Calculator</h1>
+    <!--  Investment Input  -->
+    <div class='jumbotron text-center' id='investment-wrapper'>
+      <h2>Investment Amount:</h2>
+      <input id='investment-input' type='text'>
+      <h1 id='input-val-msg'>You must enter a number!</h1>
+    </div>
+
+    <h2>Stock Lookup</h2>
+    <p>Start typing in the input field to find your stock:</p>
+    <input id='search-input' type='text' placeholder='Search...'>
+    <br>
+
+    <div id='search-list'>
+      <ul id='stock-name' style='list-style-type:none; display:inline;'></ul>
+      <ul id='stock-name-results' style='list-style-type:none; display:inline;'></ul>
+    </div>
+
+    <button id='add-stock'>add stock</button>
+
+    <div class='stocks' id='stocks'>
+      <table class='table table-bordered stock-table' id='stock-table'>
+        <tr>
+          <th id='#table-name'>Name</th>
+          <th id='#table-symbol'>Symbol</th>
+          <th id='#table-price'>Cost</th>
+          <th id='#table-percentage'>Percentage</th>
+          <th id='#table-investment'>Dollar Total</th>
+          <th id='#table-shares'>Shares Needed</th>
+        </tr>
+      </table>
+      <h1 id='percent-message'>Percentages must add up to 100%.</h1>
+      <h1 id='too-much'>You can only add ten stocks at a time.</h1>
+      <h1 id='no-duplicates'>Duplicates are not allowed.</h1>
+    </div>
+    <div id='calculator'>
+      <button id='calculate-button'>CALCULATE!</button>
+    </div>
+    <h6>“Data provided for free by <a href='https://iextrading.com/developer' target=_blank>IEX</a>. View IEX’s <a href='' target=_blank>Terms of Use.”</a></h6>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(() => {
+        $('#stock-name-results').hide();
+        console.log('jquery working');
+        const tradingCalc = () => {
+          let stocks;
+          //get data function gets data via ajax creates a variable and then passes that to the convertdata function to be ready to manipulate
+          const getData = () => {
+
+            console.log('getting data');
+            $.ajax({
+              url: 'https://api.iextrading.com/1.0/ref-data/symbols?filter=symbol,name',
+              method: 'GET',
+              dataType: "JSONP",
+            }).then((data) => {
+              stocks = data;
+              // console.log('this is data from ajax', data);
+              convertData(stocks);
+            }) //end ajax
+          } // end getdata
+
+          // COnverts our data into a list of li's that will be passed to our search list.
+          const convertData = (stocks) => {
+            console.log('inside convert data', stocks);
+            $(stocks).each((i, d) => {
+              let stock = $(`<li data-search-term='${d.name.toLowerCase()}'>`).append(d.name + " — " + d.symbol);
+              $(stock).addClass('data-item');
+              $('#stock-name').append(stock);
+            })
+            searchBar();
+          }
+
+          const searchBar = () => {
+            const delay = (function() {
+              let timer = 0;
+              return function(callback, ms) {
+                clearTimeout(timer);
+                timer = setTimeout(callback, ms);
+              };
+            })();
+
+            let filtered = $(stocks).filter((i, d) =>{
+              let sym = d.symbol
+
+              return $(sym).filter(function(_, s) {
+                return $.inArray(s, filtersArray) > -1;
+              }).length === filtersArray.length;
+            });
+
+          });
+      } // End Searchbar function
+      getData();
+    } //end tradingcalc
+    tradingCalc();
+    }); //end jquery
+  </script>
+</body>
+
+</html>
